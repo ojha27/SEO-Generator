@@ -88,7 +88,7 @@ seoContentSchema.statics.getUserHistory = function(userId, page = 1, limit = 10)
 // Static method to get user's usage statistics
 seoContentSchema.statics.getUserStats = function(userId) {
   return this.aggregate([
-    { $match: { user: mongoose.Types.ObjectId(userId) } },
+    { $match: { user: new mongoose.Types.ObjectId(userId) } },
     {
       $group: {
         _id: null,
