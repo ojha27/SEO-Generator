@@ -16,7 +16,7 @@ const app = express();
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://seo-generator-frontend-3kdozln5w-amritaojha914-7712s-projects.vercel.app'] 
+    ? ['https://seo-generator-frontend-3kdozln5w-amritaojha914-7712s-projects.vercel.app', 'https://seo-generator-frontend.vercel.app'] 
     : ['http://localhost:3000'],
   credentials: true
 }));
