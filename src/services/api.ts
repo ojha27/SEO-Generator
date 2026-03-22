@@ -1,75 +1,77 @@
-import axios from 'axios'
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+// ✅ Correct base URL (NO localhost fallback)
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Create axios instance
+// Optional safety check
+if (!API_BASE_URL) {
+  console.error("❌ VITE_API_URL is not defined");
+}
+
+// ✅ Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+  withCredentials: true, // ✅ important for auth
+});
 
-// Add request interceptor to include auth token
+// ✅ Request interceptor (attach token)
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+  (error) => Promise.reject(error)
+);
 
-// Add response interceptor for error handling
+// ✅ Response interceptor (handle auth error)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-// Auth API
+// ================= AUTH API =================
 export const authAPI = {
-  login: (email: string, password: string) => 
-    api.post('/auth/login', { email, password }),
-  
-  register: (username: string, email: string, password: string) => 
-    api.post('/auth/register', { username, email, password }),
-  
-  getProfile: () => 
-    api.get('/auth/me'),
-}
+  login: (email: string, password: string) =>
+    api.post("/auth/login", { email, password }),
 
-// SEO API
+  register: (username: string, email: string, password: string) =>
+    api.post("/auth/register", { username, email, password }),
+
+  getProfile: () => api.get("/auth/me"),
+};
+
+// ================= SEO API =================
 export const seoAPI = {
-  generate: (keyword: string, topic: string, targetUrl?: string) => 
-    api.post('/seo/generate', { keyword, topic, targetUrl }),
-  
-  getHistory: (page = 1, limit = 10) => 
+  generate: (keyword: string, topic: string, targetUrl?: string) =>
+    api.post("/seo/generate", { keyword, topic, targetUrl }),
+
+  getHistory: (page = 1, limit = 10) =>
     api.get(`/seo/history?page=${page}&limit=${limit}`),
-  
-  getGeneration: (id: string) => 
+
+  getGeneration: (id: string) =>
     api.get(`/seo/${id}`),
-  
-  getUsage: () => 
-    api.get('/seo/usage'),
-  
-  deleteGeneration: (id: string) => 
+
+  getUsage: () => api.get("/seo/usage"),
+
+  deleteGeneration: (id: string) =>
     api.delete(`/seo/${id}`),
-}
+};
 
-// Health check
+// ================= HEALTH =================
 export const healthAPI = {
-  check: () => api.get('/health'),
-}
+  check: () => api.get("/health"),
+};
 
-export default api
+export default api;

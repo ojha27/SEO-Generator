@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { 
@@ -15,10 +15,15 @@ const Layout: React.FC = () => {
   const { user, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleNavClick = () => {
+    setSidebarOpen(false)
   }
 
   const navigation = [
@@ -31,9 +36,17 @@ const Layout: React.FC = () => {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 lg:flex">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+      <div
+        className={`${sidebarOpen ? 'block' : 'hidden'} fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg lg:static lg:inset-0 lg:block lg:shrink-0`}
+      >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
@@ -84,6 +97,7 @@ const Layout: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={handleNavClick}
                   className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                     isActive(item.href)
                       ? 'bg-primary-100 text-primary-700'
@@ -111,31 +125,30 @@ const Layout: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
         <div className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
+              <div className="mr-3 lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen((v) => !v)}
+                  className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                >
+                  <span className="sr-only">Open sidebar</span>
+                  <BarChart3 className="h-6 w-6" />
+                </button>
+              </div>
               <h1 className="text-lg font-semibold text-gray-900">
                 {navigation.find(item => isActive(item.href))?.name || 'Dashboard'}
               </h1>
-            </div>
-            
-            {/* Mobile menu button */}
-            <div className="lg:hidden">
-              <button
-                type="button"
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-              >
-                <span className="sr-only">Open sidebar</span>
-                <BarChart3 className="h-6 w-6" />
-              </button>
             </div>
           </div>
         </div>
 
         {/* Page Content */}
-        <main className="flex-1">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
