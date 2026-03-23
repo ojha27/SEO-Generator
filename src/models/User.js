@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   usageQuota: {
     type: Number,
-    default: 5, // Free user gets 5 generations
+    default: 50, // Free user gets 50 generations
     min: 0
   },
   usedQuota: {
