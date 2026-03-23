@@ -20,7 +20,8 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "https://seo-generator-frontend.vercel.app",
-    "https://seo-generator-frontend-3kdozln5w-amritaojha914-7712s-projects.vercel.app"
+    "https://seo-generator-frontend-3kdozln5w-amritaojha914-7712s-projects.vercel.app",
+    "https://seo-generator-frontend-revxjb428-amritaojha914-7712s-projects.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
